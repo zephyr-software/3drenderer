@@ -5,11 +5,11 @@
 
 bool is_running = false;
 
-SDL_Window* window = NULL;
-SDL_Renderer* renderer = NULL;
+SDL_Window *window = NULL;
+SDL_Renderer *renderer = NULL;
 
-uint32_t* color_buffer = NULL;
-SDL_Texture* color_buffer_texture = NULL;
+uint32_t *color_buffer = NULL;
+SDL_Texture *color_buffer_texture = NULL;
 
 int window_width = 640;
 int window_height = 480;
@@ -22,17 +22,18 @@ bool intialize_window(void) {
 
     SDL_DisplayMode display_mode;
     SDL_GetCurrentDisplayMode(0, &display_mode);
-    window_width = display_mode.w;
-    window_height = display_mode.h;
+    window_width = display_mode.w / 4 * 3;
+    window_height = display_mode.h / 4 * 3;
 
     // create a sdl window
+    Uint32 flags = SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP;
     window = SDL_CreateWindow(
-        NULL, 
-        SDL_WINDOWPOS_CENTERED, 
-        SDL_WINDOWPOS_CENTERED,
-        window_width,
-        window_height,
-        SDL_WINDOW_BORDERLESS
+            NULL,
+            SDL_WINDOWPOS_CENTERED,
+            SDL_WINDOWPOS_CENTERED,
+            window_width,
+            window_height,
+            flags
     );
     if (!window) {
         fprintf(stderr, "Error creating SDL window.\n");
@@ -41,9 +42,9 @@ bool intialize_window(void) {
 
     // create a sdl renderer
     renderer = SDL_CreateRenderer(window, -1, 0);
-        if (!renderer) {
+    if (!renderer) {
         fprintf(stderr, "Error creating SDL renderer.\n");
-        return false;  
+        return false;
     }
 
     return true;
@@ -51,30 +52,30 @@ bool intialize_window(void) {
 
 void setup(void) {
     // allocate the required memory in bytes to hold the color buffer
-    color_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
-    
+    color_buffer = (uint32_t *) malloc(sizeof(uint32_t) * window_width * window_height);
+
     // creating a sdl texture that is used to display the color buffer
     color_buffer_texture = SDL_CreateTexture(
-        renderer,
-        SDL_PIXELFORMAT_ARGB8888,
-        SDL_TEXTUREACCESS_STREAMING,
-        window_width,
-        window_height
+            renderer,
+            SDL_PIXELFORMAT_ARGB8888,
+            SDL_TEXTUREACCESS_STREAMING,
+            window_width,
+            window_height
     );
 }
 
 void process_input(void) {
     SDL_Event event;
     SDL_PollEvent(&event);
-    
-    switch(event.type) {
+
+    switch (event.type) {
         case SDL_QUIT:
-             is_running = false;
-             break;
+            is_running = false;
+            break;
         case SDL_KEYDOWN:
-             if (event.key.keysym.sym == SDLK_ESCAPE)
-             is_running = false;
-             break;
+            if (event.key.keysym.sym == SDLK_ESCAPE)
+                is_running = false;
+            break;
     }
 }
 
@@ -84,10 +85,10 @@ void update(void) {
 
 void render_color_buffer() {
     SDL_UpdateTexture(
-        color_buffer_texture,
-        NULL,
-        color_buffer,
-        (int)(window_width * sizeof(uint32_t))
+            color_buffer_texture,
+            NULL,
+            color_buffer,
+            (int) (window_width * sizeof(uint32_t))
     );
 
     SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
@@ -106,7 +107,7 @@ void render(void) {
     SDL_RenderClear(renderer);
 
     render_color_buffer();
-    clear_color_buffer(0xFFFF00FF);
+    clear_color_buffer(0xFF770077);
 
     SDL_RenderPresent(renderer);
 }
@@ -124,7 +125,7 @@ int main(void) {
 
     setup();
 
-    while(is_running) {
+    while (is_running) {
         process_input();
         update();
         render();

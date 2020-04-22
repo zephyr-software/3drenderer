@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "display.h"
+#include "vector.h"
 
 bool is_running = false;
 
@@ -57,6 +58,8 @@ int main(void) {
     is_running = intialize_window();
 
     setup();
+
+    vec3_t myvector = { 1.0, 2.0, 3.0 };
 
     while (is_running) {
         process_input();

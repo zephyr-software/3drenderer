@@ -17,8 +17,10 @@ bool intialize_window(void) {
 
     SDL_DisplayMode display_mode;
     SDL_GetCurrentDisplayMode(0, &display_mode);
-    window_width = display_mode.w / 4 * 3;
-    window_height = display_mode.h / 4 * 3;
+//    window_width = display_mode.w / 4 * 3;
+    window_width = 512;
+//    window_height = display_mode.h / 4 * 3;
+    window_height = 512;
 
     // create a sdl window
     Uint32 flags = SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP;
@@ -84,6 +86,16 @@ void draw_grid(int grid_size, uint32_t color) {
                 color_buffer[(window_width * y) + x] = color;
             }
         }
+    }
+}
+
+void draw_center(uint32_t color) {
+    for (int x = 0; x < window_width; x++) {
+        color_buffer[(window_width * (window_width / 2)) + x] = color;
+    }
+
+    for (int y = 0; y < window_height; y++) {
+        color_buffer[(window_width * y) + window_width / 2] = color;
     }
 }
 

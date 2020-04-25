@@ -2,7 +2,13 @@
 #include "display.h"
 #include "vector.h"
 
+#define N_POINTS (8 * 8 * 8)
+
 bool is_running = false;
+
+vec3_t cube_points[N_POINTS];
+vec2_t projected_points[N_POINTS];
+float fov_factor = 128;
 
 void setup(void) {
     // allocate the required memory in bytes to hold the color buffer
@@ -16,6 +22,16 @@ void setup(void) {
             window_width,
             window_height
     );
+
+    int point_count = 0;
+    for (float x = -1; x < 1; x += 0.25) {
+        for (float y = -1; y < 1; y += 0.25) {
+            for (float z = -1; z < 1; z += 0.25) {
+                vec3_t new_point = {.x = x, .y = y, .z = z};
+                cube_points[point_count++] = new_point;
+            }
+        }
+    }
 }
 
 void process_input(void) {
@@ -33,24 +49,37 @@ void process_input(void) {
     }
 }
 
+vec2_t project(vec3_t point) {
+    vec2_t projected_point = {
+            .x = fov_factor * point.x,
+            .y = fov_factor * point.y,
+    };
+
+    return projected_point;
+}
+
 void update(void) {
-    //todo
+    for (int i = 0; i < N_POINTS; i++) {
+        vec3_t point = cube_points[i];
+        vec2_t projected_point = project(point);
+        projected_points[i] = projected_point;
+    }
 }
 
 void render(void) {
-//    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-
     clear_color_buffer(0xFF000000);
-    draw_pixel(2, 2, 0xFFFFFF00);
-    draw_grid(16, 0xFF007700);
-    draw_rect(window_width / 2 - window_width / 4,
-              window_height / 2 - window_height / 4,
-              (window_width / 2 + window_width / 4) - (window_width / 2 - window_width / 4),
-              (window_height / 2 + window_height / 4) - (window_height / 2 - window_height / 4), 0xFF00FF00);
+    draw_grid(16, 0xFF003300);
+    draw_center(0xFF770000);
+
+    for (int i = 0; i < N_POINTS; i++) {
+        vec2_t projected_point = projected_points[i];
+        draw_rect(projected_point.x + window_width / 2,
+                  projected_point.y + window_height / 2,
+                  4, 4, 0xFFFF00FF);
+    }
+
 
     render_color_buffer();
-
     SDL_RenderPresent(renderer);
 }
 
@@ -58,8 +87,6 @@ int main(void) {
     is_running = intialize_window();
 
     setup();
-
-    vec3_t myvector = { 1.0, 2.0, 3.0 };
 
     while (is_running) {
         process_input();

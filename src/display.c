@@ -91,11 +91,11 @@ void draw_grid(int grid_size, uint32_t color) {
 
 void draw_center(uint32_t color) {
     for (int x = 0; x < window_width; x++) {
-        color_buffer[(window_width * (window_width / 2)) + x] = color;
+        color_buffer[window_width * (window_height / 2) + x] = color;
     }
 
     for (int y = 0; y < window_height; y++) {
-        color_buffer[(window_width * y) + window_width / 2] = color;
+        color_buffer[window_width * y + window_width / 2] = color;
     }
 }
 

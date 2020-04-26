@@ -6,8 +6,8 @@ SDL_Renderer *renderer = NULL;
 uint32_t *color_buffer = NULL;
 SDL_Texture *color_buffer_texture = NULL;
 
-int window_width = 640;
-int window_height = 480;
+int window_width = 800;
+int window_height = 600;
 
 bool intialize_window(void) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -17,10 +17,8 @@ bool intialize_window(void) {
 
     SDL_DisplayMode display_mode;
     SDL_GetCurrentDisplayMode(0, &display_mode);
-    window_width = display_mode.w / 4 * 3;
-//    window_width = 512;
-    window_height = display_mode.h / 4 * 3;
-//    window_height = 512;
+//    window_width = display_mode.w / 4 * 3;
+//    window_height = display_mode.h / 4 * 3;
 
     // create a sdl window
     Uint32 flags = SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP;

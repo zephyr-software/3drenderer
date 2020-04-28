@@ -21,7 +21,8 @@ bool intialize_window(void) {
 //    window_height = display_mode.h / 4 * 3;
 
     // create a sdl window
-    Uint32 flags = SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP;
+    Uint32 flags =
+            SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP | SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
     window = SDL_CreateWindow(
             NULL,
             SDL_WINDOWPOS_CENTERED,

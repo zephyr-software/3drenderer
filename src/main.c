@@ -1,10 +1,11 @@
 #include "display.h"
 #include "vector.h"
 #include "mesh.h"
+#include "array.h"
 
 bool is_running = false;
 
-triangle_t triangles_to_render[N_MESH_FACES];
+triangle_t *triangles_to_render = NULL;
 
 float fov_factor = 512;
 
@@ -67,6 +68,9 @@ void update(void) {
     cube_rotation.y += 0.01;
     cube_rotation.z += 0.01;
 
+    // Initialize the array of triangles to render
+    triangles_to_render = NULL;
+
     // Loop all triangle faces of our mesh
     for (int i = 0; i < N_MESH_FACES; i++) {
         face_t mesh_face = mesh_faces[i];
@@ -99,7 +103,7 @@ void update(void) {
         }
 
         // Save the projected triangle in the array of triangles to render
-        triangles_to_render[i] = projected_triangle;
+        array_push(triangles_to_render, projected_triangle);
     }
 }
 
@@ -109,7 +113,9 @@ void render(void) {
     draw_center(0xFF770000);
 
     // Loop all projected triangles and render them
-    for (int i = 0; i < N_MESH_FACES; i++) {
+    int num_triangles = array_length(triangles_to_render);
+    // Loop all projected triangles and render them
+    for (int i = 0; i < num_triangles; i++) {
         triangle_t triangle = triangles_to_render[i];
 
         draw_triangle(triangle.points[0].x, triangle.points[0].y,
@@ -121,6 +127,8 @@ void render(void) {
         draw_rect(triangle.points[1].x, triangle.points[1].y, 4, 4, 0xFFFF00FF);
         draw_rect(triangle.points[2].x, triangle.points[2].y, 4, 4, 0xFFFF00FF);
     }
+    // Clear the array of triangles to render every frame loop
+    array_free(triangles_to_render);
 
     render_color_buffer();
     SDL_RenderPresent(renderer);

@@ -27,6 +27,9 @@ void setup(void) {
             window_width,
             window_height
     );
+
+    // Loads the cube values in the mesh data structure
+    load_cube_mesh_data();
 }
 
 void process_input(void) {
@@ -72,13 +75,14 @@ void update(void) {
     triangles_to_render = NULL;
 
     // Loop all triangle faces of our mesh
-    for (int i = 0; i < N_MESH_FACES; i++) {
-        face_t mesh_face = mesh_faces[i];
+    int num_faces = array_length(mesh.faces);
+    for (int i = 0; i < num_faces; i++) {
+        face_t mesh_face = mesh.faces[i];
 
         vec3_t face_vertices[3];
-        face_vertices[0] = mesh_vertices[mesh_face.a - 1];
-        face_vertices[1] = mesh_vertices[mesh_face.b - 1];
-        face_vertices[2] = mesh_vertices[mesh_face.c - 1];
+        face_vertices[0] = mesh.vertices[mesh_face.a - 1];
+        face_vertices[1] = mesh.vertices[mesh_face.b - 1];
+        face_vertices[2] = mesh.vertices[mesh_face.c - 1];
 
         triangle_t projected_triangle;
         // Loop all three vertices of this current face and apply transformations
@@ -134,6 +138,12 @@ void render(void) {
     SDL_RenderPresent(renderer);
 }
 
+void free_resources(void) {
+    free(color_buffer);
+    array_free(mesh.faces);
+    array_free(mesh.vertices);
+}
+
 int main(void) {
     is_running = intialize_window();
 
@@ -146,6 +156,7 @@ int main(void) {
     }
 
     destroy_window();
+    free_resources();
 
     return 0;
 }

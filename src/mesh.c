@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "array.h"
 #include "mesh.h"
 
@@ -51,4 +53,90 @@ void load_cube_mesh_data(void) {
         face_t cube_face = cube_faces[i];
         array_push(mesh.faces, cube_face);
     }
+}
+
+void load_obj_file_mesh_data(char *filename) {
+    FILE *file;
+    file = fopen(filename, "r");
+
+    int bufferLength = 255;
+    char buffer[bufferLength];
+    while (fgets(buffer, bufferLength, file)) {
+        printf("--> new line: %s", buffer);
+
+        if (buffer[0] == 'v' && buffer[1] == ' ') { // found string with vertex signature
+            printf("found v - processing: ");
+
+            vec3_t obj_vertex;
+            char *p;
+            p = strtok(buffer, " ");
+            if (p) {
+                for (int i = 0; i < 3; i++) {
+                    p = strtok(NULL, " ");
+                    float tmpFloat = atof(p);
+
+                    if (i == 0) {
+                        obj_vertex.x = tmpFloat;
+                    }
+
+                    if (i == 1) {
+                        obj_vertex.y = tmpFloat;
+                    }
+
+                    if (i == 2) {
+                        obj_vertex.z = tmpFloat;
+                    }
+
+                    printf("float: %.6f ", tmpFloat);
+                }
+
+                array_push(mesh.vertices, obj_vertex);
+                printf("\n");
+            }
+        }
+
+        if (buffer[0] == 'f' && buffer[1] == ' ') { // found string with vertex signature
+            printf("found f - processing: ");
+
+
+            char *string_array[3];
+
+            char *p;
+            p = strtok(buffer, " ");
+            if (p) {
+                for (int i = 0; i < 3; i++) {
+                    p = strtok(NULL, " ");
+                    printf("string: %s ", p);
+
+                    string_array[i] = p;
+                }
+
+                face_t obj_file_face;
+
+                printf("\n");
+                for (int i = 0; i < 3; i++) {
+                    char *p2 = strtok(string_array[i], "/");
+                    int num = atoi(p2);
+                    printf("num: %d ", num);
+
+                    if (i == 0) {
+                        obj_file_face.a = num;
+                    }
+
+                    if (i == 1) {
+                        obj_file_face.b = num;
+                    }
+
+                    if (i == 2) {
+                        obj_file_face.c = num;
+                    }
+                }
+
+                array_push(mesh.faces, obj_file_face);
+                printf("\n");
+            }
+        }
+    }
+
+    fclose(file);
 }

@@ -58,77 +58,32 @@ void load_cube_mesh_data(void) {
 void load_obj_file_data(char *filename) {
     FILE *file;
     file = fopen(filename, "r");
+    char line[1024];
 
-    int buffer_length = 255;
-    char buffer[buffer_length];
-    while (fgets(buffer, buffer_length, file)) {
-        printf("-> read new line: %s", buffer);
-
-        if (buffer[0] == 'v' && buffer[1] == ' ') { // found string - vertex
-            printf("found 'v ' - processing [vertex]: ");
-
-            char *token;
-            token = strtok(buffer, " ");
-
+    while (fgets(line, 1024, file)) {
+        // Vertex information
+        if (strncmp(line, "v ", 2) == 0) {
             vec3_t vertex;
-            for (int i = 0; i < 3; i++) {
-                token = strtok(NULL, " ");
-                float float_value = atof(token);
-
-                if (i == 0) {
-                    vertex.x = float_value;
-                }
-
-                if (i == 1) {
-                    vertex.y = float_value;
-                }
-
-                if (i == 2) {
-                    vertex.z = float_value;
-                }
-
-                printf("float: %.6f ", float_value);
-            }
-
+            sscanf(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
             array_push(mesh.vertices, vertex);
-            printf("\n");
         }
-
-        if (buffer[0] == 'f' && buffer[1] == ' ') { // found string - face vertex indices
-            printf("found 'f ' - processing [face vertex indices]: ");
-
-            char *indices_token;
-            indices_token = strtok(buffer, " ");
-
-            char *indices_array[3];
-            for (int i = 0; i < 3; i++) {
-                indices_token = strtok(NULL, " ");
-                printf("indices token: %s ", indices_token);
-
-                indices_array[i] = indices_token;
-            }
-
-            face_t face;
-            for (int i = 0; i < 3; i++) {
-                char *token = strtok(indices_array[i], "/");
-                int vertex_index = atoi(token);
-                printf("face vertex index: %d ", vertex_index);
-
-                if (i == 0) {
-                    face.a = vertex_index;
-                }
-
-                if (i == 1) {
-                    face.b = vertex_index;
-                }
-
-                if (i == 2) {
-                    face.c = vertex_index;
-                }
-            }
-
+        // Face information
+        if (strncmp(line, "f ", 2) == 0) {
+            int vertex_indices[3];
+            int texture_indices[3];
+            int normal_indices[3];
+            sscanf(
+                    line, "f %d/%d/%d %d/%d/%d %d/%d/%d",
+                    &vertex_indices[0], &texture_indices[0], &normal_indices[0],
+                    &vertex_indices[1], &texture_indices[1], &normal_indices[1],
+                    &vertex_indices[2], &texture_indices[2], &normal_indices[2]
+            );
+            face_t face = {
+                    .a = vertex_indices[0],
+                    .b = vertex_indices[1],
+                    .c = vertex_indices[2]
+            };
             array_push(mesh.faces, face);
-            printf("\n");
         }
     }
 

@@ -55,86 +55,80 @@ void load_cube_mesh_data(void) {
     }
 }
 
-void load_obj_file_mesh_data(char *filename) {
+void load_obj_file_data(char *filename) {
     FILE *file;
     file = fopen(filename, "r");
 
-    int bufferLength = 255;
-    char buffer[bufferLength];
-    while (fgets(buffer, bufferLength, file)) {
-        printf("--> new line: %s", buffer);
+    int buffer_length = 255;
+    char buffer[buffer_length];
+    while (fgets(buffer, buffer_length, file)) {
+        printf("-> read new line: %s", buffer);
 
-        if (buffer[0] == 'v' && buffer[1] == ' ') { // found string with vertex signature
-            printf("found v - processing: ");
+        if (buffer[0] == 'v' && buffer[1] == ' ') { // found string - vertex
+            printf("found 'v ' - processing [vertex]: ");
 
-            vec3_t obj_vertex;
-            char *p;
-            p = strtok(buffer, " ");
-            if (p) {
-                for (int i = 0; i < 3; i++) {
-                    p = strtok(NULL, " ");
-                    float tmpFloat = atof(p);
+            char *token;
+            token = strtok(buffer, " ");
 
-                    if (i == 0) {
-                        obj_vertex.x = tmpFloat;
-                    }
+            vec3_t vertex;
+            for (int i = 0; i < 3; i++) {
+                token = strtok(NULL, " ");
+                float float_value = atof(token);
 
-                    if (i == 1) {
-                        obj_vertex.y = tmpFloat;
-                    }
-
-                    if (i == 2) {
-                        obj_vertex.z = tmpFloat;
-                    }
-
-                    printf("float: %.6f ", tmpFloat);
+                if (i == 0) {
+                    vertex.x = float_value;
                 }
 
-                array_push(mesh.vertices, obj_vertex);
-                printf("\n");
+                if (i == 1) {
+                    vertex.y = float_value;
+                }
+
+                if (i == 2) {
+                    vertex.z = float_value;
+                }
+
+                printf("float: %.6f ", float_value);
             }
+
+            array_push(mesh.vertices, vertex);
+            printf("\n");
         }
 
-        if (buffer[0] == 'f' && buffer[1] == ' ') { // found string with vertex signature
-            printf("found f - processing: ");
+        if (buffer[0] == 'f' && buffer[1] == ' ') { // found string - face vertex indices
+            printf("found 'f ' - processing [face vertex indices]: ");
 
+            char *indices_token;
+            indices_token = strtok(buffer, " ");
 
-            char *string_array[3];
+            char *indices_array[3];
+            for (int i = 0; i < 3; i++) {
+                indices_token = strtok(NULL, " ");
+                printf("indices token: %s ", indices_token);
 
-            char *p;
-            p = strtok(buffer, " ");
-            if (p) {
-                for (int i = 0; i < 3; i++) {
-                    p = strtok(NULL, " ");
-                    printf("string: %s ", p);
-
-                    string_array[i] = p;
-                }
-
-                face_t obj_file_face;
-
-                printf("\n");
-                for (int i = 0; i < 3; i++) {
-                    char *p2 = strtok(string_array[i], "/");
-                    int num = atoi(p2);
-                    printf("num: %d ", num);
-
-                    if (i == 0) {
-                        obj_file_face.a = num;
-                    }
-
-                    if (i == 1) {
-                        obj_file_face.b = num;
-                    }
-
-                    if (i == 2) {
-                        obj_file_face.c = num;
-                    }
-                }
-
-                array_push(mesh.faces, obj_file_face);
-                printf("\n");
+                indices_array[i] = indices_token;
             }
+
+            face_t face;
+            for (int i = 0; i < 3; i++) {
+                char *token = strtok(indices_array[i], "/");
+                int vertex_index = atoi(token);
+                printf("face vertex index: %d ", vertex_index);
+
+                if (i == 0) {
+                    face.a = vertex_index;
+                }
+
+                if (i == 1) {
+                    face.b = vertex_index;
+                }
+
+                if (i == 2) {
+                    face.c = vertex_index;
+                }
+            }
+
+            array_push(mesh.faces, face);
+            printf("\n");
         }
     }
 

@@ -117,3 +117,14 @@ vec3_t vec3_rotate_z(vec3_t vector, float angle) {
 
     return rotated_vector;
 }
+
+
+vec3_t vec3_cross(vec3_t vector_a, vec3_t vector_b) {
+    vec3_t result = {
+            .x = vector_a.y * vector_b.z - vector_a.z * vector_b.y,
+            .y = vector_a.z * vector_b.x - vector_a.x * vector_b.z,
+            .z = vector_a.x * vector_b.y - vector_a.y * vector_b.x
+    };
+
+    return result;
+}

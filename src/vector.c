@@ -43,6 +43,11 @@ vec2_t vec2_div(vec2_t vector, float factor) {
 }
 
 
+float vec2_dot(vec2_t vector_a, vec2_t vector_b) {
+    return vector_a.x * vector_b.x + vector_a.y * vector_b.y;
+}
+
+
 float vec3_length(vec3_t vector) {
     return sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
 }
@@ -127,4 +132,8 @@ vec3_t vec3_cross(vec3_t vector_a, vec3_t vector_b) {
     };
 
     return result;
+}
+
+float vec3_dot(vec3_t vector_a, vec3_t vector_b) {
+    return vector_a.x * vector_b.x + vector_a.y * vector_b.y + vector_a.z * vector_b.z;
 }

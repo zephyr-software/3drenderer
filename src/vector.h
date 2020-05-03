@@ -25,6 +25,9 @@ vec2_t vec2_mul(vec2_t vector, float factor);
 vec2_t vec2_div(vec2_t vector, float factor);
 
 
+float vec2_dot(vec2_t vector_a, vec2_t vector_b);
+
+
 float vec3_length(vec3_t vector);
 
 vec3_t vec3_add(vec3_t vector_a, vec3_t vector_b);
@@ -44,6 +47,8 @@ vec3_t vec3_rotate_z(vec3_t vector, float angle);
 
 
 vec3_t vec3_cross(vec3_t vector_a, vec3_t vector_b);
+
+float vec3_dot(vec3_t vector_a, vec3_t vector_b);
 
 
 #endif

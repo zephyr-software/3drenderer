@@ -42,9 +42,15 @@ vec2_t vec2_div(vec2_t vector, float factor) {
     return result;
 }
 
-
 float vec2_dot(vec2_t vector_a, vec2_t vector_b) {
     return vector_a.x * vector_b.x + vector_a.y * vector_b.y;
+}
+
+void vec2_normalize(vec2_t *vector) {
+    float length = sqrt(vector->x * vector->x + vector->y * vector->y);
+
+    vector->x /= length;
+    vector->y /= length;
 }
 
 
@@ -92,7 +98,6 @@ vec3_t vec3_div(vec3_t vector, float factor) {
     return result;
 }
 
-
 vec3_t vec3_rotate_x(vec3_t vector, float angle) {
     vec3_t rotated_vector = {
             .x = vector.x,
@@ -123,7 +128,6 @@ vec3_t vec3_rotate_z(vec3_t vector, float angle) {
     return rotated_vector;
 }
 
-
 vec3_t vec3_cross(vec3_t vector_a, vec3_t vector_b) {
     vec3_t result = {
             .x = vector_a.y * vector_b.z - vector_a.z * vector_b.y,
@@ -136,4 +140,12 @@ vec3_t vec3_cross(vec3_t vector_a, vec3_t vector_b) {
 
 float vec3_dot(vec3_t vector_a, vec3_t vector_b) {
     return vector_a.x * vector_b.x + vector_a.y * vector_b.y + vector_a.z * vector_b.z;
+}
+
+void vec3_normalize(vec3_t *vector) {
+    float length = sqrt(vector->x * vector->x + vector->y * vector->y + vector->z * vector->z);
+
+    vector->x /= length;
+    vector->y /= length;
+    vector->z /= length;
 }

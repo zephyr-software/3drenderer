@@ -33,7 +33,8 @@ void setup(void) {
     );
 
     // Loads the cube values in the mesh data structure
-    load_obj_file_data("./assets/cube.obj");
+    load_cube_mesh_data();
+//    load_obj_file_data("./assets/cube.obj");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -162,6 +163,7 @@ void update(void) {
 
             projected_triangle.points[j] = projected_point;
         }
+        projected_triangle.color = mesh_face.color;
 
         // Save the projected triangle in the array of triangles to render
         array_push(triangles_to_render, projected_triangle);
@@ -184,7 +186,7 @@ void render(void) {
             draw_filled_triangle(triangle.points[0].x, triangle.points[0].y,
                                  triangle.points[1].x, triangle.points[1].y,
                                  triangle.points[2].x, triangle.points[2].y,
-                                 0xFF777700);
+                                 triangle.color);
         }
 
         // Draw triangle wireframe

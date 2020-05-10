@@ -8,28 +8,12 @@ void swap(int *a, int *b) {
     *b = tmp;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Draw a triangle using three raw line calls
-///////////////////////////////////////////////////////////////////////////////
 void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color) {
     draw_line(x0, y0, x1, y1, color);
     draw_line(x1, y1, x2, y2, color);
     draw_line(x2, y2, x0, y0, color);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Draw a filled a triangle with a flat bottom
-///////////////////////////////////////////////////////////////////////////////
-//
-//        (x0,y0)
-//          / \
-//         /   \
-//        /     \
-//       /       \
-//      /         \
-//  (x1,y1)------(x2,y2)
-//
-///////////////////////////////////////////////////////////////////////////////
 void fill_flat_bottom_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color) {
     float inv_slope_1 = (float) (x1 - x0) / (y1 - y0);
     float inv_slope_2 = (float) (x2 - x0) / (y2 - y0);
@@ -45,19 +29,6 @@ void fill_flat_bottom_triangle(int x0, int y0, int x1, int y1, int x2, int y2, u
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Draw a filled a triangle with a flat top
-///////////////////////////////////////////////////////////////////////////////
-//
-//  (x0,y0)------(x1,y1)
-//      \         /
-//       \       /
-//        \     /
-//         \   /
-//          \ /
-//        (x2,y2)
-//
-///////////////////////////////////////////////////////////////////////////////
 void fill_flat_top_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color) {
     // Find the two slopes (two triangle legs)
     float inv_slope_1 = (float) (x2 - x0) / (y2 - y0);
@@ -75,29 +46,6 @@ void fill_flat_top_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Draw a filled triangle with the flat-top/flat-bottom method
-// We split the original triangle in two, half flat-bottom and half flat-top
-///////////////////////////////////////////////////////////////////////////////
-//
-//          (x0,y0)
-//            / \
-//           /   \
-//          /     \
-//         /       \
-//        /         \
-//   (x1,y1)------(Mx,My)
-//       \_           \
-//          \_         \
-//             \_       \
-//                \_     \
-//                   \    \
-//                     \_  \
-//                        \_\
-//                           \
-//                         (x2,y2)
-//
-///////////////////////////////////////////////////////////////////////////////
 void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color) {
     if (y0 > y1) {
         swap(&y0, &y1);

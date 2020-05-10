@@ -13,6 +13,10 @@ typedef struct {
     float z;
 } vec3_t;
 
+typedef struct {
+    float x, y, z, w;
+} vec4_t;
+
 
 float vec2_length(vec2_t vector);
 
@@ -50,6 +54,11 @@ vec3_t vec3_cross(vec3_t vector_a, vec3_t vector_b);
 float vec3_dot(vec3_t vector_a, vec3_t vector_b);
 
 void vec3_normalize(vec3_t *vector);
+
+
+vec4_t vec4_from_vec3(vec3_t v);
+
+vec3_t vec3_from_vec4(vec4_t v);
 
 
 #endif

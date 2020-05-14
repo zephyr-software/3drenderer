@@ -89,17 +89,20 @@ void update(void) {
 
     previous_frame_time = SDL_GetTicks();
 
+//    cube_rotation.x += 0.01;
+//    cube_rotation.y += 0.01;
+//    cube_rotation.z += 0.01;
 
-    cube_rotation.x += 0.01;
-    cube_rotation.y += 0.01;
-    cube_rotation.z += 0.01;
+//    mesh.scale.x += 0.001;
+//    mesh.scale.y += 0.001;
 
-    mesh.scale.x += 0.001;
-    mesh.scale.y += 0.001;
+    mesh.translation.x += 0.01;
+    mesh.translation.z = 4.0;
 
 
     // Create a scale matrix that will be used to multiply the mesh vertices
     mat4_t scale_matrix = mat4_make_scale(mesh.scale.x, mesh.scale.y, mesh.scale.z);
+    mat4_t translation_matrix = mat4_make_translation(mesh.translation.x, mesh.translation.y, mesh.translation.z);
 
     triangles_to_render = NULL; // Initialize the array of triangles to render
     // Loop all triangle faces of our mesh
@@ -117,15 +120,9 @@ void update(void) {
         for (int j = 0; j < 3; j++) {
             vec4_t transformed_vertex = vec4_from_vec3(face_vertices[j]);
 
-//            transformed_vertex = vec3_rotate_x(transformed_vertex, cube_rotation.x);
-//            transformed_vertex = vec3_rotate_y(transformed_vertex, cube_rotation.y);
-//            transformed_vertex = vec3_rotate_z(transformed_vertex, cube_rotation.z);
-
             // Use a matrix to scale our original vertex
             transformed_vertex = mat4_mul_vec4(scale_matrix, transformed_vertex);
-
-            // Translate the vertices away from the camera
-            transformed_vertex.z += 4;
+            transformed_vertex = mat4_mul_vec4(translation_matrix, transformed_vertex);
 
             // Save transformed vertex in the array of transformed vertices
             transformed_vertices[j] = transformed_vertex;

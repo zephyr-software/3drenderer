@@ -1,8 +1,14 @@
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+
 #include "display.h"
 #include "vector.h"
 #include "mesh.h"
 #include "array.h"
 #include "matrix.h"
+
 
 bool is_running = false;
 
@@ -12,6 +18,7 @@ float fov_factor = 512;
 
 vec3_t camera_position = {0, 0, 0};
 vec3_t cube_rotation = {.x = 0, .y = 0, .z = 0};
+mat4_t proj_matrix;
 
 int previous_frame_time = 0;
 
@@ -32,6 +39,13 @@ void setup(void) {
             window_width,
             window_height
     );
+
+    // Initialize the perspective projection matrix
+    float fov = M_PI / 3.0; // the same as 180/3, or 60deg
+    float aspect = (float) window_height / (float) window_width;
+    float znear = 0.1;
+    float zfar = 100.0;
+    proj_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
 
     // Loads the cube values in the mesh data structure
     load_cube_mesh_data();
@@ -69,15 +83,6 @@ void process_input(void) {
     }
 }
 
-vec2_t project(vec3_t point) {
-    vec2_t projected_point = {
-            .x = (fov_factor * point.x) / point.z,
-            .y = (fov_factor * point.y) / point.z,
-    };
-
-    return projected_point;
-}
-
 void update(void) {
     // Wait some time until the reach the target frame time in milliseconds
     int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
@@ -89,8 +94,8 @@ void update(void) {
 
     previous_frame_time = SDL_GetTicks();
 
-//    mesh.rotation.x += 0.01;
-    mesh.rotation.y += 0.01;
+    mesh.rotation.x += 0.01;
+//    mesh.rotation.y  += 0.01;
 //    mesh.rotation.z += 0.01;
 
 //    mesh.scale.x += 0.001;
@@ -172,21 +177,34 @@ void update(void) {
         }
 
 
-        triangle_t projected_triangle;
+        vec4_t projected_points[3];
+
         // Loop all three vertices to perform projection
         for (int j = 0; j < 3; j++) {
             // Project the current vertex
-            vec2_t projected_point = project(vec3_from_vec4(transformed_vertices[j]));
+            projected_points[j] = mat4_mul_vec4_project(proj_matrix, transformed_vertices[j]);
 
-            // Scale and translate the projected points to the middle of the screen
-            projected_point.x += (window_width / 2);
-            projected_point.y += (window_height / 2);
+            // Scale into the view
+            projected_points[j].x *= (window_width / 2.0);
+            projected_points[j].y *= (window_height / 2.0);
 
-            projected_triangle.points[j] = projected_point;
+            // Translate the projected points to the middle of the screen
+            projected_points[j].x += (window_width / 2.0);
+            projected_points[j].y += (window_height / 2.0);
         }
-        projected_triangle.color = mesh_face.color;
-        projected_triangle.avg_depth =
-                (transformed_vertices[0].z + transformed_vertices[1].z + transformed_vertices[2].z) / 3.0;
+
+        // Calculate the average depth for each face based on the vertices after transformation
+        float avg_depth = (transformed_vertices[0].z + transformed_vertices[1].z + transformed_vertices[2].z) / 3.0;
+
+        triangle_t projected_triangle = {
+                .points = {
+                        {projected_points[0].x, projected_points[0].y},
+                        {projected_points[1].x, projected_points[1].y},
+                        {projected_points[2].x, projected_points[2].y},
+                },
+                .color = mesh_face.color,
+                .avg_depth = avg_depth
+        };
 
         // Save the projected triangle in the array of triangles to render
         array_push(triangles_to_render, projected_triangle);

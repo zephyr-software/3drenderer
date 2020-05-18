@@ -22,7 +22,7 @@ bool intialize_window(void) {
 
     // create a sdl window
     Uint32 flags =
-            SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP | SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+            SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP;
     window = SDL_CreateWindow(
             NULL,
             SDL_WINDOWPOS_CENTERED,
@@ -37,7 +37,7 @@ bool intialize_window(void) {
     }
 
     // create a sdl renderer
-    renderer = SDL_CreateRenderer(window, -1, 0);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
         fprintf(stderr, "Error creating SDL renderer.\n");
         return false;

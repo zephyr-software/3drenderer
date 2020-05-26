@@ -25,7 +25,6 @@ mat4_t proj_matrix;
 
 int previous_frame_time = 0;
 
-
 void setup(void) {
     // Initialize render mode and triangle culling method
     render_method = RENDER_WIRE;
@@ -52,7 +51,7 @@ void setup(void) {
 
     // Loads the cube values in the mesh data structure
 //    load_cube_mesh_data();
-    load_obj_file_data("./assets/cube.obj");
+    load_obj_file_data("./assets/f22r.obj");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,6 +86,9 @@ void process_input(void) {
 }
 
 uint32_t light_apply_intensity(uint32_t original_color, float percentage_factor) {
+    if (percentage_factor < 0) percentage_factor = 0;
+    if (percentage_factor > 1) percentage_factor = 1;
+
     uint32_t a = (original_color & 0xFF000000);
     uint32_t r = (original_color & 0x00FF0000) * percentage_factor;
     uint32_t g = (original_color & 0x0000FF00) * percentage_factor;
@@ -109,7 +111,7 @@ void update(void) {
     previous_frame_time = SDL_GetTicks();
 
     mesh.rotation.x = 0.5;
-    mesh.rotation.y = 0.75;
+    mesh.rotation.y += 0.005;
     mesh.rotation.z = 0;
 
 //    mesh.scale.x += 0.001;
@@ -160,8 +162,8 @@ void update(void) {
             transformed_vertices[j] = transformed_vertex;
         }
 
+        uint32_t flat_color = 0xFF777777;
         // Backface culling test to see if the current face should be projected
-        uint32_t flat_color = 0xFF000000;
         if (cull_method == CULL_BACKFACE) {
             // Check backface culling
             vec3_t vector_a = vec3_from_vec4(transformed_vertices[0]); /*   A   */
@@ -189,21 +191,9 @@ void update(void) {
             if (dot_normal_camera < 0) {
                 continue;
             }
-//            fprintf(stdout, "==========================================================================\n", flat_color);
-//            fprintf(stdout, "dot normal camera %.6f\n", dot_normal_camera);
 
-            // ---------------------------------------------------------------------------------------------------------
-            // mesh.translation.z - 1 = 100%
-            float light_percent = (dot_normal_camera / (mesh.translation.z / 100.0));
-//            fprintf(stdout, "light percent %.6f\n", light_percent);
-
-            float light_intensity_value = light_percent * (255 / 100);
-//            fprintf(stdout, "light intensity value %.6f\n", light_intensity_value);
-
-            flat_color = light_apply_intensity(0xFFFFFFFF, light_intensity_value);
-//            fprintf(stdout, "flat_color %.6f\n", flat_color);
+            flat_color = light_apply_intensity(0xFFFFFFFF, dot_normal_camera / mesh.translation.z);
         }
-
 
         vec4_t projected_points[3];
 
@@ -272,7 +262,6 @@ void render(void) {
                                  triangle.points[1].x, triangle.points[1].y,
                                  triangle.points[2].x, triangle.points[2].y,
                                  triangle.color);
-//                                 light_apply_intensity(0xFFFFFFFF, 250.0));
         }
 
         // Draw triangle wireframe

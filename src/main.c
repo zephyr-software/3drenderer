@@ -9,21 +9,17 @@
 #include "mesh.h"
 #include "array.h"
 #include "matrix.h"
+#include "light.h"
 
-
-bool is_running = false;
 
 triangle_t *triangles_to_render = NULL;
 
-float fov_factor = 512;
+bool is_running = false;
+int previous_frame_time = 0;
 
-vec3_t camera_position = {0, 0, 0};
-//vec3_t light_position = {0, 0, 0};
-
-vec3_t cube_rotation = {.x = 0, .y = 0, .z = 0};
+vec3_t camera_position = {.x = 0, .y = 0, .z = 0};
 mat4_t proj_matrix;
 
-int previous_frame_time = 0;
 
 void setup(void) {
     // Initialize render mode and triangle culling method
@@ -85,20 +81,6 @@ void process_input(void) {
     }
 }
 
-uint32_t light_apply_intensity(uint32_t original_color, float percentage_factor) {
-    if (percentage_factor < 0) percentage_factor = 0;
-    if (percentage_factor > 1) percentage_factor = 1;
-
-    uint32_t a = (original_color & 0xFF000000);
-    uint32_t r = (original_color & 0x00FF0000) * percentage_factor;
-    uint32_t g = (original_color & 0x0000FF00) * percentage_factor;
-    uint32_t b = (original_color & 0x000000FF) * percentage_factor;
-
-    uint32_t new_color = a | (r & 0x00FF0000) | (g & 0x0000FF00) | (b & 0x000000FF);
-
-    return new_color;
-}
-
 void update(void) {
     // Wait some time until the reach the target frame time in milliseconds
     int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
@@ -112,7 +94,7 @@ void update(void) {
 
     mesh.rotation.x = 0.5;
     mesh.rotation.y += 0.005;
-    mesh.rotation.z = 0;
+    mesh.rotation.z = 0.0;
 
 //    mesh.scale.x += 0.001;
 //    mesh.scale.y += 0.001;
@@ -162,37 +144,34 @@ void update(void) {
             transformed_vertices[j] = transformed_vertex;
         }
 
-        uint32_t flat_color = 0xFF777777;
+
+        // Get individual vectors from A, B, and C vertices to compute normal
+        vec3_t vector_a = vec3_from_vec4(transformed_vertices[0]); /*   A   */
+        vec3_t vector_b = vec3_from_vec4(transformed_vertices[1]); /*  / \  */
+        vec3_t vector_c = vec3_from_vec4(transformed_vertices[2]); /* C---B */
+
+        // Get the vector subtraction of B-A and C-A
+        vec3_t vector_ab = vec3_sub(vector_b, vector_a);
+        vec3_t vector_ac = vec3_sub(vector_c, vector_a);
+        vec3_normalize(&vector_ab); // normalize the vector
+        vec3_normalize(&vector_ac); // normalize the vector
+
+        // Compute the face normal (using cross product to find perpendicular)
+        vec3_t normal = vec3_cross(vector_ab, vector_ac);
+        vec3_normalize(&normal); // normalize the face normal vector
+
+        // Find the vector between a point in the triangle and the camera origin
+        vec3_t camera_ray = vec3_sub(camera_position, vector_a);
+
+        // Calculate how aligned the camera ray is with the face normal (using dot product)
+        float dot_normal_camera = vec3_dot(normal, camera_ray);
+
         // Backface culling test to see if the current face should be projected
         if (cull_method == CULL_BACKFACE) {
-            // Check backface culling
-            vec3_t vector_a = vec3_from_vec4(transformed_vertices[0]); /*   A   */
-            vec3_t vector_b = vec3_from_vec4(transformed_vertices[1]); /*  / \  */
-            vec3_t vector_c = vec3_from_vec4(transformed_vertices[2]); /* C---B */
-
-            // Get the vector subtraction of B-A and C-A
-            vec3_t vector_ab = vec3_sub(vector_b, vector_a);
-            vec3_t vector_ac = vec3_sub(vector_c, vector_a);
-
-            vec3_normalize(&vector_ab); // normalize the vector
-            vec3_normalize(&vector_ac); // normalize the vector
-
-            // Compute the face normal (using cross product to find perpendicular)
-            vec3_t normal = vec3_cross(vector_ab, vector_ac);
-            vec3_normalize(&normal); // normalize the face normal vector
-
-            // Find the vector between a point in the triangle and the camera origin
-            vec3_t camera_ray = vec3_sub(camera_position, vector_a);
-
-            // Calculate how aligned the camera ray is with the face normal (using dot product)
-            float dot_normal_camera = vec3_dot(normal, camera_ray);
-
             // Bypass the triangles that are looking away from the camera
             if (dot_normal_camera < 0) {
                 continue;
             }
-
-            flat_color = light_apply_intensity(0xFFFFFFFF, dot_normal_camera / mesh.translation.z);
         }
 
         vec4_t projected_points[3];
@@ -214,18 +193,21 @@ void update(void) {
         // Calculate the average depth for each face based on the vertices after transformation
         float avg_depth = (transformed_vertices[0].z + transformed_vertices[1].z + transformed_vertices[2].z) / 3.0;
 
+        // Calculate the shade intensity based on how aligned is the face normal and the opposite of the light direction
+        float light_intensity_factor = -vec3_dot(normal, light.direction);
+
+        // Calculate the triangle color based on the light angle
+        uint32_t triangle_color = light_apply_intensity(mesh_face.color, light_intensity_factor);
+
         triangle_t projected_triangle = {
                 .points = {
                         {projected_points[0].x, projected_points[0].y},
                         {projected_points[1].x, projected_points[1].y},
                         {projected_points[2].x, projected_points[2].y},
                 },
-//                .color = mesh_face.color,
-                .color = flat_color,
+                .color = triangle_color,
                 .avg_depth = avg_depth
         };
-
-//        fprintf(stdout, "flat_color %.6f\n", flat_color);
 
         // Save the projected triangle in the array of triangles to render
         array_push(triangles_to_render, projected_triangle);
@@ -270,7 +252,7 @@ void render(void) {
             draw_triangle(triangle.points[0].x, triangle.points[0].y,
                           triangle.points[1].x, triangle.points[1].y,
                           triangle.points[2].x, triangle.points[2].y,
-                          0xFFFFFF00);
+                          0xFFFF7700);
         }
 
         // Draw triangle vertex points

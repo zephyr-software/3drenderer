@@ -47,7 +47,7 @@ void setup(void) {
 
     // Loads the cube values in the mesh data structure
 //    load_cube_mesh_data();
-    load_obj_file_data("./assets/f22r.obj");
+    load_obj_file_data("./assets/f22.obj");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ void update(void) {
 
     previous_frame_time = SDL_GetTicks();
 
-    mesh.rotation.x = 0.5;
+    mesh.rotation.x = -0.5;
     mesh.rotation.y += 0.005;
     mesh.rotation.z = 0.0;
 
@@ -180,6 +180,9 @@ void update(void) {
         for (int j = 0; j < 3; j++) {
             // Project the current vertex
             projected_points[j] = mat4_mul_vec4_project(proj_matrix, transformed_vertices[j]);
+
+            // Flip vertically since the y values of the 3D mesh grow bottom->up and in screen space y values grow top->down
+            projected_points[j].y *= -1;
 
             // Scale into the view
             projected_points[j].x *= (window_width / 2.0);

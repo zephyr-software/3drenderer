@@ -9,7 +9,7 @@ SDL_Texture *color_buffer_texture = NULL;
 int window_width = 800;
 int window_height = 600;
 
-bool intialize_window(void) {
+bool initialize_window(void) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         fprintf(stderr, "Error intializing SDL.\n");
         return false;

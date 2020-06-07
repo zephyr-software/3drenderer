@@ -1,11 +1,13 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 
-#define FPS 60
+
+#define FPS 30
 #define FRAME_TARGET_TIME (1000 / FPS)
 
 
@@ -18,7 +20,9 @@ enum render_method {
     RENDER_WIRE,
     RENDER_WIRE_VERTEX,
     RENDER_FILL_TRIANGLE,
-    RENDER_FILL_TRIANGLE_WIRE
+    RENDER_FILL_TRIANGLE_WIRE,
+    RENDER_TEXTURED,
+    RENDER_TEXTURED_WIRE
 } render_method;
 
 
@@ -32,7 +36,7 @@ extern int window_width;
 extern int window_height;
 
 
-bool intialize_window(void);
+bool initialize_window(void);
 
 void destroy_window(void);
 

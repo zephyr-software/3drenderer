@@ -32,7 +32,7 @@ void setup(void) {
     // creating a sdl texture that is used to display the color buffer
     color_buffer_texture = SDL_CreateTexture(
             renderer,
-            SDL_PIXELFORMAT_ARGB8888,
+            SDL_PIXELFORMAT_RGBA32,
             SDL_TEXTUREACCESS_STREAMING,
             window_width,
             window_height
@@ -45,14 +45,12 @@ void setup(void) {
     float zfar = 100.0;
     proj_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
 
-    // Manually load the hardcoded texture data from the static array
-    mesh_texture = (uint32_t *) REDBRICK_TEXTURE;
-    texture_width = 64;
-    texture_height = 64;
-
     // Loads the cube values in the mesh data structure
     load_cube_mesh_data();
 //    load_obj_file_data("./assets/f22.obj");
+
+    // Load the texture information from an external PNG file
+    load_png_texture_data("./assets/cube.png");
 }
 
 // Poll system events and handle keyboard input
@@ -99,9 +97,9 @@ void update(void) {
 
     previous_frame_time = SDL_GetTicks();
 
-    mesh.rotation.x += 0.005;
-    mesh.rotation.y = 0.0;
-    mesh.rotation.z = 0.0;
+    mesh.rotation.x == 0.0;
+    mesh.rotation.y += 0.01;
+    mesh.rotation.z == 0.0;
 
 //    mesh.scale.x += 0.001;
 //    mesh.scale.y += 0.001;
@@ -245,7 +243,7 @@ void update(void) {
 void render(void) {
     clear_color_buffer(0xFF000000);
     draw_grid(16, 0xFF003300);
-    draw_center(0xFF770000);
+    draw_center(0xFF000033);
 
     // Loop all projected triangles and render them
     int num_triangles = array_length(triangles_to_render);
@@ -280,7 +278,7 @@ void render(void) {
             draw_triangle(triangle.points[0].x, triangle.points[0].y,
                           triangle.points[1].x, triangle.points[1].y,
                           triangle.points[2].x, triangle.points[2].y,
-                          0xFFFF7700);
+                          0xFF0077FF);
         }
 
         // Draw triangle vertex points

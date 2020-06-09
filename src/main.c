@@ -296,6 +296,7 @@ void render(void) {
 }
 
 void free_resources(void) {
+    upng_free(png_texture);
     free(color_buffer);
     array_free(mesh.faces);
     array_free(mesh.vertices);

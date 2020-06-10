@@ -46,8 +46,8 @@ void setup(void) {
     proj_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
 
     // Loads the cube values in the mesh data structure
-    load_cube_mesh_data();
-//    load_obj_file_data("./assets/f22.obj");
+//    load_cube_mesh_data();
+    load_obj_file_data("./assets/cube.obj");
 
     // Load the texture information from an external PNG file
     load_png_texture_data("./assets/cube.png");
@@ -97,9 +97,9 @@ void update(void) {
 
     previous_frame_time = SDL_GetTicks();
 
-    mesh.rotation.x == 0.0;
+    mesh.rotation.x += 0.0;
     mesh.rotation.y += 0.01;
-    mesh.rotation.z == 0.0;
+    mesh.rotation.z += 0.0;
 
 //    mesh.scale.x += 0.001;
 //    mesh.scale.y += 0.001;
@@ -123,9 +123,9 @@ void update(void) {
         face_t mesh_face = mesh.faces[i];
 
         vec3_t face_vertices[3];
-        face_vertices[0] = mesh.vertices[mesh_face.a - 1];
-        face_vertices[1] = mesh.vertices[mesh_face.b - 1];
-        face_vertices[2] = mesh.vertices[mesh_face.c - 1];
+        face_vertices[0] = mesh.vertices[mesh_face.a];
+        face_vertices[1] = mesh.vertices[mesh_face.b];
+        face_vertices[2] = mesh.vertices[mesh_face.c];
 
         vec4_t transformed_vertices[3];
         // Loop all three vertices of this current face and apply transformations

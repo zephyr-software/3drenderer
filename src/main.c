@@ -47,10 +47,10 @@ void setup(void) {
 
     // Loads the cube values in the mesh data structure
 //    load_cube_mesh_data();
-    load_obj_file_data("./assets/cube.obj");
+    load_obj_file_data("./assets/efa.obj");
 
     // Load the texture information from an external PNG file
-    load_png_texture_data("./assets/cube.png");
+    load_png_texture_data("./assets/efa.png");
 }
 
 // Poll system events and handle keyboard input
@@ -97,9 +97,9 @@ void update(void) {
 
     previous_frame_time = SDL_GetTicks();
 
-    mesh.rotation.x += 0.0;
-    mesh.rotation.y += 0.01;
-    mesh.rotation.z += 0.0;
+    mesh.rotation.x += 0.01;
+    mesh.rotation.y = 0.00;
+    mesh.rotation.z = 0.00;
 
 //    mesh.scale.x += 0.001;
 //    mesh.scale.y += 0.001;

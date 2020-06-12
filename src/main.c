@@ -29,6 +29,8 @@ void setup(void) {
     // allocate the required memory in bytes to hold the color buffer
     color_buffer = (uint32_t *) malloc(sizeof(uint32_t) * window_width * window_height);
 
+    z_buffer = (float *) malloc(sizeof(float) * window_width * window_height);
+
     // creating a sdl texture that is used to display the color buffer
     color_buffer_texture = SDL_CreateTexture(
             renderer,
@@ -98,8 +100,8 @@ void update(void) {
     previous_frame_time = SDL_GetTicks();
 
     mesh.rotation.x += 0.01;
-    mesh.rotation.y = 0.00;
-    mesh.rotation.z = 0.00;
+    mesh.rotation.y += 0.00;
+    mesh.rotation.z += 0.00;
 
 //    mesh.scale.x += 0.001;
 //    mesh.scale.y += 0.001;
@@ -242,6 +244,8 @@ void update(void) {
 
 void render(void) {
     clear_color_buffer(0xFF000000);
+    clear_z_buffer();
+
     draw_grid(16, 0xFF003300);
     draw_center(0xFF000033);
 
@@ -297,6 +301,7 @@ void render(void) {
 
 void free_resources(void) {
     upng_free(png_texture);
+    free(z_buffer);
     free(color_buffer);
     array_free(mesh.faces);
     array_free(mesh.vertices);

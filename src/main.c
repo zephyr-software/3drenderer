@@ -12,13 +12,20 @@
 #include "light.h"
 
 
-triangle_t *triangles_to_render = NULL;
-
+// Global variables for execution status and game loop
 bool is_running = false;
 int previous_frame_time = 0;
+vec3_t camera_position = {0, 0, 0};
 
-vec3_t camera_position = {.x = 0, .y = 0, .z = 0};
+// Array to store triangles that should be rendered each frame
+#define MAX_TRIANGLES 10000
+triangle_t triangles_to_render[MAX_TRIANGLES];
+int num_triangles_to_render = 0;
+
+// Declaration of our global transformation matrices
+mat4_t world_matrix;
 mat4_t proj_matrix;
+mat4_t view_matrix;
 
 
 void setup(void) {
@@ -99,6 +106,9 @@ void update(void) {
 
     previous_frame_time = SDL_GetTicks();
 
+    // Initialize the counter of triangles to render for the current frame
+    num_triangles_to_render = 0;
+
     mesh.rotation.x += 0.01;
     mesh.rotation.y += 0.00;
     mesh.rotation.z += 0.00;
@@ -118,7 +128,6 @@ void update(void) {
     mat4_t rotation_matrix_y = mat4_make_rotation_y(mesh.rotation.y);
     mat4_t rotation_matrix_z = mat4_make_rotation_z(mesh.rotation.z);
 
-    triangles_to_render = NULL; // Initialize the array of triangles to render
     // Loop all triangle faces of our mesh
     int num_faces = array_length(mesh.faces);
     for (int i = 0; i < num_faces; i++) {
@@ -222,7 +231,9 @@ void update(void) {
         };
 
         // Save the projected triangle in the array of triangles to render
-        array_push(triangles_to_render, projected_triangle);
+        if (num_triangles_to_render < MAX_TRIANGLES) {
+            triangles_to_render[num_triangles_to_render++] = projected_triangle;
+        }
     }
 }
 
@@ -234,9 +245,7 @@ void render(void) {
     draw_center(0xFF000033);
 
     // Loop all projected triangles and render them
-    int num_triangles = array_length(triangles_to_render);
-    // Loop all projected triangles and render them
-    for (int i = 0; i < num_triangles; i++) {
+    for (int i = 0; i < num_triangles_to_render; i++) {
         triangle_t triangle = triangles_to_render[i];
 
         // Draw filled triangle
@@ -278,8 +287,6 @@ void render(void) {
             draw_rect(triangle.points[2].x - 2, triangle.points[2].y - 2, 4, 4, 0xFFFF00FF);
         }
     }
-    // Clear the array of triangles to render every frame loop
-    array_free(triangles_to_render);
 
     render_color_buffer();
     SDL_RenderPresent(renderer);

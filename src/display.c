@@ -7,8 +7,8 @@ uint32_t *color_buffer = NULL;
 float *z_buffer = NULL;
 SDL_Texture *color_buffer_texture = NULL;
 
-int window_width = 800;
-int window_height = 600;
+int window_width = 1024;
+int window_height = 768;
 
 bool initialize_window(void) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -18,8 +18,8 @@ bool initialize_window(void) {
 
     SDL_DisplayMode display_mode;
     SDL_GetCurrentDisplayMode(0, &display_mode);
-    window_width = display_mode.w / 4 * 3;
-    window_height = display_mode.h / 4 * 3;
+    //window_width = display_mode.w / 4 * 3;
+    //window_height = display_mode.h / 4 * 3;
 
     // create a sdl window
     Uint32 flags =

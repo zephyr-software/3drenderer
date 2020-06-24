@@ -16,6 +16,7 @@
 // Global variables for execution status and game loop
 bool is_running = false;
 int previous_frame_time = 0;
+float delta_time = 0;
 
 // Array to store triangles that should be rendered each frame
 #define MAX_TRIANGLES 10000
@@ -104,14 +105,17 @@ void update(void) {
         SDL_Delay(time_to_wait);
     }
 
+    // Get a delta time factor converted to seconds to be used to update our game objects
+    delta_time = (SDL_GetTicks() - previous_frame_time) / 1000.0;
+
     previous_frame_time = SDL_GetTicks();
 
     // Initialize the counter of triangles to render for the current frame
     num_triangles_to_render = 0;
 
-    mesh.rotation.x += 0.00;
-    mesh.rotation.y += 0.00;
-    mesh.rotation.z += 0.00;
+    mesh.rotation.x += 0.2 * delta_time;
+    mesh.rotation.y += 0.2 * delta_time;
+    mesh.rotation.z += 0.2 * delta_time;
 
 //    mesh.scale.x += 0.001;
 //    mesh.scale.y += 0.001;
@@ -122,8 +126,8 @@ void update(void) {
     mesh.translation.z = 4.0;
 
     // Change the camera position per animation frame
-    camera.position.x += 0.008;
-    camera.position.y += 0.008;
+//    camera.position.x += 0.1 * delta_time;
+//    camera.position.y += 0.1 * delta_time;
 
     // Create the view matrix looking at a hardcoded target point
     vec3_t target = {0, 0, 4.0};

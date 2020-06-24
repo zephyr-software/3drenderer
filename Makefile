@@ -1,8 +1,17 @@
 build:
-	gcc -Wall -std=c99 ./src/*.c -lSDL2 -lm -o renderer
+	gcc \
+	-Wfatal-errors \
+	-std=c99 \
+	./src/*.c \
+	-I"C:\libsdl\include" \
+	-L"C:\libsdl\lib" \
+	-lmingw32 \
+	-lSDL2main \
+	-lSDL2 \
+	-o renderer.exe \
 
 run:
-	./renderer
+	renderer.exe
 
 clean:
-	rm renderer
+	del renderer.exe

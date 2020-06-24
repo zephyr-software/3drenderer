@@ -12,7 +12,7 @@ int window_height = 768;
 
 bool initialize_window(void) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        fprintf(stderr, "Error intializing SDL.\n");
+//        fprintf(stderr, "Error intializing SDL.\n");
         return false;
     }
 
@@ -22,25 +22,26 @@ bool initialize_window(void) {
     //window_height = display_mode.h / 4 * 3;
 
     // create a sdl window
-    Uint32 flags =
-            SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP;
+//    Uint32 flags =
+//            SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP;
+
     window = SDL_CreateWindow(
             NULL,
             SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED,
             window_width,
             window_height,
-            flags
+            NULL
     );
     if (!window) {
-        fprintf(stderr, "Error creating SDL window.\n");
+//        fprintf(stderr, "Error creating SDL window.\n");
         return false;
     }
 
     // create a sdl renderer
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
-        fprintf(stderr, "Error creating SDL renderer.\n");
+//        fprintf(stderr, "Error creating SDL renderer.\n");
         return false;
     }
 

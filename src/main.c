@@ -300,7 +300,7 @@ void free_resources(void) {
     array_free(mesh.vertices);
 }
 
-int main(void) {
+int main( int argc, char* args[] ) {
     is_running = initialize_window();
 
     setup();
